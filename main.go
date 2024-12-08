@@ -36,14 +36,11 @@ func main() {
 			if header_n > 0 && !inside_header {
 				text2 += fmt.Sprintf("<h%d>", header_n)
 				inside_header = true
-				inside_header = true
 			} else {
 				text2 += string(rune_value)
-
 			}
 		default:
 			text2 += string(rune_value)
-
 		}
 	}
 
@@ -54,16 +51,17 @@ func main() {
 	scanner := bufio.NewScanner(strings.NewReader(text2))
 	for scanner.Scan() {
 		line := scanner.Text()
-		// fmt.Printf("line: %s", line)
 		switch {
 		case strings.Contains(line, "<h") && strings.Contains(line, "</h"):
-			text3 += line + "\n"
+			fallthrough
 		case strings.HasPrefix(line, "- ") || strings.HasPrefix(strings.TrimSpace(line), "- "):
-			text3 += line + "\n"
+			fallthrough
 		case strings.HasPrefix(line, "![](") || strings.HasPrefix(line, "---"):
-			text3 += line + "\n"
+			fallthrough
+		case strings.HasPrefix(line, ">"):
+			fallthrough
 		case line == "":
-			text3 += "\n"
+			text3 += line + "\n"
 		default:
 			text3 += "<p>" + line + "</p>" + "\n"
 		}
@@ -101,13 +99,12 @@ func main() {
 			case -1:
 				link_state = 0
 				text4 += "!"
-				text4 += string(rune_value)
+				fallthrough
 			case 0:
 				text4 += string(rune_value)
 			case 1:
 				link_text += string(rune_value)
 			case 2:
-				// log.Fatalf("Error: started link but didn't complete it: [%s](", link_text)
 				text4 += fmt.Sprintf("[%s]", link_text)
 				text4 += string(rune_value)
 				link_state = 0
@@ -121,10 +118,9 @@ func main() {
 	if link_state > 0 {
 		log.Fatalf("Error parsing link\n")
 	}
-	// fmt.Println(text4)
 
 	// Images
-	// ![](img.png)
+	// ![caption](img.png)
 	text5 := ""
 	img_text := ""
 	img_url := ""
@@ -250,12 +246,10 @@ func main() {
 			text7 += line + "\n"
 		case !is_list && strings.HasPrefix(line, "- "):
 			is_list = true
-			list_item := strings.TrimPrefix(line, "- ")
 			text7 += "<ul>\n"
-			text7 += fmt.Sprintf("    <li>%s</li>\n", list_item)
+			fallthrough
 		case is_list && strings.HasPrefix(line, "- "):
 			list_item := strings.TrimPrefix(line, "- ")
-			// text7 += "<ul>\n"
 			text7 += fmt.Sprintf("    <li>%s</li>\n", list_item)
 		case is_list && strings.HasPrefix(strings.TrimSpace(line), "- "):
 			text7 += line + "\n"
@@ -264,7 +258,6 @@ func main() {
 			text7 += line + "\n"
 			is_list = false
 		}
-
 	}
 	// fmt.Println(text7)
 
@@ -280,12 +273,10 @@ func main() {
 			text8 += line + "\n"
 		case !is_indented_list && strings.HasPrefix(line, "  - "):
 			is_indented_list = true
-			list_item := strings.TrimPrefix(line, "  - ")
 			text8 += "    <ul>\n"
-			text8 += fmt.Sprintf("        <li>%s</li>\n", list_item)
+			fallthrough
 		case is_indented_list && strings.HasPrefix(line, "  - "):
 			list_item := strings.TrimPrefix(line, "  - ")
-			// text8 += "<ul>\n"
 			text8 += fmt.Sprintf("        <li>%s</li>\n", list_item)
 		case is_indented_list && !strings.HasPrefix(line, "  - "):
 			text8 += "    </ul>\n\n"
@@ -296,22 +287,43 @@ func main() {
 	}
 	// fmt.Println(text8)
 
-	// Line separator elements
+	// Quotes
 	text9 := ""
-	scanner9 := bufio.NewScanner(strings.NewReader(text8))
+	is_quote := false
+	scanner9 := bufio.NewScanner(strings.NewReader(text6))
 	for scanner9.Scan() {
 		line := scanner9.Text()
-		switch line {
-		case "---":
-			text9 += "\n<hr>\n"
-		default:
+		switch {
+		case !is_quote && !strings.HasPrefix(line, ">"):
 			text9 += line + "\n"
+		case !is_quote && strings.HasPrefix(line, ">"):
+			is_quote = true
+			text9 += "<blockquote>\n"
+			fallthrough
+		case is_quote && strings.HasPrefix(line, "> "):
+			list_item := strings.TrimPrefix(line, "> ")
+			text9 += fmt.Sprintf("    %s\n", list_item)
+		case is_quote && !strings.HasPrefix(strings.TrimSpace(line), "> "):
+			text9 += "</blockquote>\n"
+			text9 += line + "\n"
+			is_quote = false
 		}
 	}
-	fmt.Println(text9)
 
-	// Block quotes
+	// Second level quotes
+
+	// Line separator elements
 	text10 := ""
-	is_blockquote := false
+	scanner10 := bufio.NewScanner(strings.NewReader(text9))
+	for scanner10.Scan() {
+		line := scanner10.Text()
+		switch line {
+		case "---":
+			text10 += "\n<hr>\n"
+		default:
+			text10 += line + "\n"
+		}
+	}
+	fmt.Println(text10)
 
 }
