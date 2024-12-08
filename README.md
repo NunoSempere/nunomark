@@ -39,9 +39,9 @@ Unsupported functionality:
 
 ## Roadmap 
 
-- [ ] Read from file
+- [x] Read from file
+- [x] Make this enough to support my forecasting newsletter
 - [ ] Check against the commonmark spec? <https://github.com/commonmark/commonmark-spec>
-- [ ] Make this enough to support my forecasting newsletter
 
 ---
 

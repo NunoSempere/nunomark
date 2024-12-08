@@ -9,11 +9,15 @@ import (
 )
 
 func main() {
-	file_name := "README.md"
+	//
+	if len(os.Args) < 2 {
+		log.Fatalf("Usage: nunomark file.md")
+	}
+	file_name := os.Args[1]
 
 	content, err := os.ReadFile(file_name)
 	if err != nil {
-		log.Fatalf("failed to read file: %s", err)
+		log.Fatalf("Failed to read file: %s", err)
 	}
 	text := string(content)
 
