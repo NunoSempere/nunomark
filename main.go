@@ -356,4 +356,22 @@ func main() {
 	}
 	fmt.Println(text11)
 
+	// code blocks
+	text12 := ""
+	code_block := false
+	scanner12 := bufio.NewScanner(strings.NewReader(text11))
+	for scanner12.Scan() {
+		line := scanner12.Text()
+		switch {
+		case line == "```" && !code_block:
+			text12 += "<pre><code>"
+			code_block = true
+		case line == "```" && code_block:
+			text12 += "</pre></code>"
+		default:
+			text12 += line + "\n"
+		}
+	}
+	fmt.Println(text12)
+
 }

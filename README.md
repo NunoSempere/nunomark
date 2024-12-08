@@ -22,10 +22,10 @@ Supported functionality:
 - [x] Quotes
 - [x] Read from file
 - [x] Make this enough to support my forecasting newsletter
+- [x] Code blocks
 
 Functionality that might supported in the future
 
-- [ ] Code blocks
 - [ ] Checklists
 - [ ] Footnotes
 - [ ] Smart quotes?
@@ -63,3 +63,7 @@ A text! With some exclamation mark!
 > > With a quote inside a quote
 
 *Italics*, and **bold**, and ***bold italics***.
+
+```
+A code block!
+```
