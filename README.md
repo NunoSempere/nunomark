@@ -2,8 +2,6 @@
 
 A simple markdown to html compiler. Its architecture is a series of passes, character by character, or line by line. I wrote it because I thought it might be fun (it was).
 
-You can see how nunomark renders this README [here](./README.html)
-
 ## Roadmap
 
 Supported functionality:
@@ -26,15 +24,17 @@ Supported functionality:
 
 Functionality that might supported in the future
 
-- [ ] Checklists
 - [ ] Footnotes
-- [ ] Smart quotes?
+- [ ] Inline code
 - [ ] Underlines
-- [ ] crossed out
-- [ ] Custom extensions
+- [ ] Crossed out
+- [ ] Extensions
   - [ ] Mathjax
   - [ ] Blog comments
+  - [ ] Checklists, with [~]
+  - [ ] Smart quotes?
 - [ ] Check against the commonmark spec? <https://github.com/commonmark/commonmark-spec>
+- [ ] Add unsafe mode, which tries to go on when encountering a mistake?
 
 Unsupported functionality:
 
@@ -43,24 +43,27 @@ Unsupported functionality:
 - [ ] Tables?
 - [ ] Ordered lists
 
+### Some markdown examples
+
+You can see how nunomark renders this README [here](./README.html). For this, it's useful to have a few elements:
+
+> To place a man in a multi-stage rocket and project him into the controlling gravitational field of the moon where the passengers can make scientific observations, perhaps land alive, and then return to earth--all that constitutes a wild dream worthy of Jules Verne. I am bold enough to say that such a man-made voyage will never occur regardless of all future advances. 
+
+—[Lee deForest](https://dsimanek.vialattea.net/neverwrk.htm) (1873-1961) (American radio pioneer and inventor of the vacuum tube.) Feb 25, 1957
+
 ---
 
-Some examples of various elements:
+> > Superhuman machine intelligence is prima facie ridiculous
+> 
+> —*Many otherwise smart people, 2015* 
+
+— [Sam Altman's blog](https://blog.samaltman.com/technology-predictions), 2015, found when looking for sources for the first quote.
 
 ---
 
 ![](https://gatitos.nunosempere.com)
 
-A [link](https://example.com)
-
-Many [links](https://example.com), in one [line](https://test.com)
-
-A text! With some exclamation mark! 
-
-> A quote
-
-> A quote
-> > With a quote inside a quote
+---
 
 *Italics*, and **bold**, and ***bold italics***.
 
@@ -68,3 +71,19 @@ A text! With some exclamation mark!
 A code block!
 ```
 
+Two [links](https://example.com), in one [line](https://test.com)
+
+A text! With some exclamation mark! 
+
+---
+
+#### Index
+
+- Prediction markets and forecasting platforms
+  - Polymarket
+  - Kalshi
+  - Cultivate Labs
+  - Manifold Markets
+  - Other platforms
+- Research and articles
+- Odds and ends

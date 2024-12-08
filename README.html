@@ -2,8 +2,6 @@
 
 <p>A simple markdown to html compiler. Its architecture is a series of passes, character by character, or line by line. I wrote it because I thought it might be fun (it was).</p>
 
-<p>You can see how nunomark renders this README <a href='./README.html'>here</a></p>
-
 <h2>Roadmap</h2>
 
 <p>Supported functionality:</p>
@@ -39,15 +37,16 @@
 <p>Functionality that might supported in the future</p>
 
 <ul>
-    <li>[ ] Checklists</li>
     <li>[ ] Footnotes</li>
-    <li>[ ] Smart quotes?</li>
+    <li>[ ] Inline code</li>
     <li>[ ] Underlines</li>
-    <li>[ ] crossed out</li>
-    <li>[ ] Custom extensions</li>
+    <li>[ ] Crossed out</li>
+    <li>[ ] Extensions</li>
     <ul>
         <li>[ ] Mathjax</li>
         <li>[ ] Blog comments</li>
+        <li>[ ] Checklists, with [~]</li>
+        <li>[ ] Smart quotes?</li>
     </ul>
 
     <li>[ ] Check against the commonmark spec? <https://github.com/commonmark/commonmark-spec></li>
@@ -64,32 +63,36 @@
 </ul>
 
 
+<h3>Some markdown examples</h3>
+
+<p>You can see how nunomark renders this README <a href='./README.html'>here</a>. For this, it's useful to have a few elements:</p>
+
+<blockquote>
+    To place a man in a multi-stage rocket and project him into the controlling gravitational field of the moon where the passengers can make scientific observations, perhaps land alive, and then return to earth--all that constitutes a wild dream worthy of Jules Verne. I am bold enough to say that such a man-made voyage will never occur regardless of all future advances. 
+</blockquote>
+
+<p>—<a href='https://dsimanek.vialattea.net/neverwrk.htm'>Lee deForest</a> (1873-1961) (American radio pioneer and inventor of the vacuum tube.) Feb 25, 1957</p>
+
 
 <hr>
 
-<p>Some examples of various elements:</p>
+<blockquote>
+    <blockquote>
+        Superhuman machine intelligence is prima facie ridiculous
+    </blockquote>
+    
+    —<i>Many otherwise smart people, 2015</i> 
+</blockquote>
+
+<p>— <a href='https://blog.samaltman.com/technology-predictions'>Sam Altman's blog</a>, 2015, found when looking for sources for the first quote.</p>
 
 
 <hr>
 
 <img src='https://gatitos.nunosempere.com'>
 
-<p>A <a href='https://example.com'>link</a></p>
 
-<p>Many <a href='https://example.com'>links</a>, in one <a href='https://test.com'>line</a></p>
-
-<p>A text! With some exclamation mark! </p>
-
-<blockquote>
-    A quote
-</blockquote>
-
-<blockquote>
-    A quote
-    <blockquote>
-        With a quote inside a quote
-    </blockquote>
-</blockquote>
+<hr>
 
 <p><i>Italics</i>, and <b>bold</b>, and <b><i>bold italics</i></b>.</p>
 
@@ -97,4 +100,25 @@
 A code block!
 </pre></code>
 
+<p>Two <a href='https://example.com'>links</a>, in one <a href='https://test.com'>line</a></p>
+
+<p>A text! With some exclamation mark! </p>
+
+
+<hr>
+
+<h4>Index</h4>
+
+<ul>
+    <li>Prediction markets and forecasting platforms</li>
+    <ul>
+        <li>Polymarket</li>
+        <li>Kalshi</li>
+        <li>Cultivate Labs</li>
+        <li>Manifold Markets</li>
+        <li>Other platforms</li>
+    </ul>
+
+    <li>Research and articles</li>
+    <li>Odds and ends</li>
 

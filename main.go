@@ -114,7 +114,7 @@ func parseIntoLinks(text string) string {
 		}
 	}
 	if link_state > 0 {
-		log.Fatalf("Error parsing link\n")
+		log.Fatalf("Error parsing link. Intermediary result: [%s](%s)\n", link_text, link_url)
 	}
 	return result
 }
@@ -156,7 +156,6 @@ func parseIntoImages(text string) string {
 			case 2:
 				img_text += string(rune_value)
 			case 3:
-				// log.Fatalf("Error: started link but didn't complete it: [%s](", img_text)
 				result += fmt.Sprintf("![%s]", img_text)
 				result += string(rune_value)
 				img_state = 0
@@ -193,7 +192,9 @@ func parseIntoHighlights(text string) string {
 				case is_bold && !is_italics:
 					is_italics = true
 				default:
-					log.Fatalln("Too many asterisks, reduce complexity!")
+					fmt.Printf("Too many asterisks, reduce complexity!\n")
+					fmt.Printf("Text part: %s\n\n", text_in_betwen)
+					log.Fatalf("Result up to now: %s\n", result)
 				}
 			} else {
 				highlight_counter--
@@ -220,7 +221,9 @@ func parseIntoHighlights(text string) string {
 		default:
 			switch {
 			case ending_bold_flag:
-				log.Fatalf("Error: too many bolds inside italics inside..., simplify!")
+				fmt.Printf("Too many asterisks, reduce complexity!\n")
+				fmt.Printf("Text part: %s\n\n", text_in_betwen)
+				log.Fatalf("Result up to now: %s\n", result)
 			case !is_italics && !is_bold:
 				result += string(rune_value)
 			case is_italics && !is_bold:
@@ -356,6 +359,14 @@ func parseIntoSeparators(text string) string {
 	return result
 }
 
+func parseIntoFootnotes(text string) string {
+	// [^footnote]
+	// [^footnote]: Clarification
+	// Will need some data structure, but tired today
+	result := ""
+	return result
+}
+
 func parseIntoCodeBlocks(pipe func(string) string, text string) string {
 	result := ""
 	chunk := ""
@@ -379,7 +390,7 @@ func parseIntoCodeBlocks(pipe func(string) string, text string) string {
 		}
 	}
 	if code_block {
-		log.Fatalln("Unclosed codeblock!")
+		log.Fatalf("Unclosed codeblock!\n")
 	}
 	result += pipe(chunk)
 	return result
