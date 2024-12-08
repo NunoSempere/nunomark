@@ -127,6 +127,54 @@ func main() {
 	if link_state > 0 {
 		log.Fatalf("Error parsing link\n")
 	}
-	fmt.Println(text4)
+	// fmt.Println(text4)
+
+	// Images
+	// ![](img.png)
+	text5 := ""
+	img_text := ""
+	img_url := ""
+	img_state := 0 //
+	for _, rune_value := range text4 {
+		switch {
+		case rune_value == '!':
+			img_state = 1
+		case rune_value == '[' && (img_state == 1):
+			img_state = 2
+		case rune_value == ']' && (img_state == 2):
+			img_state = 3
+		case rune_value == '(' && (img_state == 3):
+			img_state = 4
+		case rune_value == ')' && (img_state == 4):
+			text5 += fmt.Sprintf("<img src='%s'>", img_url)
+			if img_text != "" {
+				text5 += fmt.Sprintf("<figcaption>%s</figcaption>", img_text)
+			}
+			img_state = 0
+			img_text = ""
+			img_url = ""
+		default:
+			switch img_state {
+			case 0:
+				text5 += string(rune_value)
+			case 1:
+				img_state = 0
+				text5 += "!"
+				text5 += string(rune_value)
+			case 2:
+				img_text += string(rune_value)
+			case 3:
+				// log.Fatalf("Error: started link but didn't complete it: [%s](", img_text)
+				text5 += fmt.Sprintf("![%s]", img_text)
+				text5 += string(rune_value)
+				img_state = 0
+				img_text = ""
+				img_url = ""
+			case 4:
+				img_url += string(rune_value)
+			}
+		}
+	}
+	fmt.Println(text5)
 
 }

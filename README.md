@@ -9,7 +9,7 @@ Architecture: a series of passes, character by character.
 - [x] Headers
 - [~] Paragraphs
 - [x] Links
-- [x] Images
+- [ ] Images
 - [ ] Footnotes
 - [ ] Bold 
 - [ ] Underline
@@ -27,4 +27,6 @@ Some examples of various elements:
 
 A [link](https://example.com)
 
+Many [links](https://example.com), in one [line](https://test.com)
 
+A text! With some exclamation mark! 
