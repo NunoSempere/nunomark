@@ -1,10 +1,10 @@
-# Marknuno
+# nunomark
 
-A simple markdown to html compiler.
+A simple markdown to html compiler. Its architecture is a series of passes, character by character, or line by line. I wrote it because I thought it might be fun (it was).
 
-Architecture: a series of passes, character by character.
+You can see how nunomark renders this README [here](./README.html)
 
-## Passes
+## Roadmap
 
 Supported functionality:
 
@@ -19,17 +19,22 @@ Supported functionality:
   - [x] Simple lists
   - [x] Second level lists
 - [x] --- separators
-- [ ] Quotes
+- [x] Quotes
+- [x] Read from file
+- [x] Make this enough to support my forecasting newsletter
 
-Functionality that might supported
+Functionality that might supported in the future
 
+- [ ] Code blocks
 - [ ] Checklists
 - [ ] Footnotes
 - [ ] Smart quotes?
+- [ ] Underlines
+- [ ] crossed out
 - [ ] Custom extensions
   - [ ] Mathjax
   - [ ] Blog comments
-- [ ] etc.
+- [ ] Check against the commonmark spec? <https://github.com/commonmark/commonmark-spec>
 
 Unsupported functionality:
 
@@ -37,12 +42,6 @@ Unsupported functionality:
 - [ ] Weird cases of many bolds inside italics, or viceversa
 - [ ] Tables?
 - [ ] Ordered lists
-
-## Roadmap 
-
-- [x] Read from file
-- [x] Make this enough to support my forecasting newsletter
-- [ ] Check against the commonmark spec? <https://github.com/commonmark/commonmark-spec>
 
 ---
 
@@ -63,3 +62,4 @@ A text! With some exclamation mark!
 > A quote
 > > With a quote inside a quote
 
+*Italics*, and **bold**, and ***bold italics***.

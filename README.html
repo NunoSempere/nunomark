@@ -1,0 +1,93 @@
+<h1>nunomark</h1>
+
+<p>A simple markdown to html compiler. Its architecture is a series of passes, character by character, or line by line. I wrote it because I thought it might be fun (it was).</p>
+
+<h2>Roadmap</h2>
+
+<p>Supported functionality:</p>
+
+<ul>
+    <li>[x] Headers</li>
+    <ul>
+        <li>[x]  headers</li>
+    </ul>
+
+    <li>[x] Paragraphs</li>
+    <li>[x] Links</li>
+    <li>[x] Images</li>
+    <li>[x] Bold, italics, underline</li>
+    <ul>
+        <li>[x] Simple: <i>italics</i>, <b>bold</b>, <b><i>bold italics</i></b></li>
+    </ul>
+
+    <li>[x] Bullet lists</li>
+    <ul>
+        <li>[x] Simple lists</li>
+        <li>[x] Second level lists</li>
+    </ul>
+
+    <li>[x] --- separators</li>
+    <li>[x] Quotes</li>
+    <li>[x] Read from file</li>
+    <li>[x] Make this enough to support my forecasting newsletter</li>
+</ul>
+
+
+<p>Functionality that might supported in the future</p>
+
+<ul>
+    <li>[ ] Code blocks</li>
+    <li>[ ] Checklists</li>
+    <li>[ ] Footnotes</li>
+    <li>[ ] Smart quotes?</li>
+    <li>[ ] Underlines</li>
+    <li>[ ] crossed out</li>
+    <li>[ ] Custom extensions</li>
+    <ul>
+        <li>[ ] Mathjax</li>
+        <li>[ ] Blog comments</li>
+    </ul>
+
+    <li>[ ] Check against the commonmark spec? <https://github.com/commonmark/commonmark-spec></li>
+</ul>
+
+
+<p>Unsupported functionality:</p>
+
+<ul>
+    <li>[ ] --- headers</li>
+    <li>[ ] Weird cases of many bolds inside italics, or viceversa</li>
+    <li>[ ] Tables?</li>
+    <li>[ ] Ordered lists</li>
+</ul>
+
+
+
+<hr>
+
+<p>Some examples of various elements:</p>
+
+
+<hr>
+
+<img src='https://gatitos.nunosempere.com'>
+
+<p>A <a href='https://example.com'>link</a></p>
+
+<p>Many <a href='https://example.com'>links</a>, in one <a href='https://test.com'>line</a></p>
+
+<p>A text! With some exclamation mark! </p>
+
+<blockquote>
+    A quote
+</blockquote>
+
+<blockquote>
+    A quote
+    <blockquote>
+        With a quote inside a quote
+    </blockquote>
+</blockquote>
+
+<p><i>Italics</i>, and <b>bold</b>, and <b><i>bold italics</i></b>.</p>
+
