@@ -15,21 +15,20 @@ Supported functionality:
 - [x] Images
 - [x] Bold, italics, underline
   - [x] Simple: *italics*, **bold**, ***bold italics***
-- [ ] Checklists
-- [ ] Bullet lists
-  - [ ] Simple lists
-  - [ ] Multilevel lists?
+- [x] Bullet lists
+  - [x] Simple lists
+  - [x] Second level lists
 - [ ] Quotes
-- [ ] Footnotes
 - [ ] --- separators
+- [ ] Checklists
+- [ ] Footnotes
 - [ ] etc.
 
 Unsupported functionality:
 
 - [ ] --- headers
-- [ ] Bold inside italics, or viceversa
+- [ ] Weird cases of many bolds inside italics, or viceversa
 - [ ] Tables?
-- [ ] Embedded html
 - [ ] Ordered lists
 
 ## Roadmap 
