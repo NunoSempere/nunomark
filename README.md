@@ -8,8 +8,8 @@ Architecture: a series of passes, character by character.
 
 - [x] Headers
 - [~] Paragraphs
-- [ ] Links
-- [ ] Images
+- [x] Links
+- [x] Images
 - [ ] Footnotes
 - [ ] Bold 
 - [ ] Underline

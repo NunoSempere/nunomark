@@ -81,6 +81,8 @@ func main() {
 	// fmt.Printf(text3)
 
 	// Links, [link](https://example.com)
+	// but not ![](imgs)
+	// or ![caption](imgs)
 	text4 := ""
 	link_text := ""
 	link_url := ""
