@@ -18,10 +18,16 @@ Supported functionality:
 - [x] Bullet lists
   - [x] Simple lists
   - [x] Second level lists
+- [x] --- separators
 - [ ] Quotes
-- [ ] --- separators
+
+Functionality that might supported
+
 - [ ] Checklists
 - [ ] Footnotes
+- [ ] Custom extensions
+  - [ ] Mathjax
+  - [ ] Blog comments
 - [ ] etc.
 
 Unsupported functionality:

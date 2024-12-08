@@ -296,8 +296,8 @@ func main() {
 	}
 	// fmt.Println(text8)
 
+	// Line separator elements
 	text9 := ""
-
 	scanner9 := bufio.NewScanner(strings.NewReader(text8))
 	for scanner9.Scan() {
 		line := scanner9.Text()
@@ -309,5 +309,9 @@ func main() {
 		}
 	}
 	fmt.Println(text9)
+
+	// Block quotes
+	text10 := ""
+	is_blockquote := false
 
 }
