@@ -294,10 +294,20 @@ func main() {
 		}
 
 	}
-	fmt.Println(text8)
+	// fmt.Println(text8)
 
-	// Lists and checklists.
-	// Hello
-	// ~, ✓,
+	text9 := ""
+
+	scanner9 := bufio.NewScanner(strings.NewReader(text8))
+	for scanner9.Scan() {
+		line := scanner9.Text()
+		switch line {
+		case "---":
+			text9 += "\n<hr>\n"
+		default:
+			text9 += line + "\n"
+		}
+	}
+	fmt.Println(text9)
 
 }
