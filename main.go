@@ -21,42 +21,15 @@ func main() {
 	}
 	text := string(content)
 
-	// Headers
-	header_n := 0
-	inside_header := false
-	text2 := ""
-	for _, rune_value := range text {
-		switch rune_value {
-		case '#':
-			header_n += 1
-		case '\n':
-			if inside_header {
-				text2 += fmt.Sprintf("</h%d>", header_n)
-				inside_header = false
-				header_n = 0
-			}
-			text2 += "\n"
-		case ' ':
-			if header_n > 0 && !inside_header {
-				text2 += fmt.Sprintf("<h%d>", header_n)
-				inside_header = true
-			} else {
-				text2 += string(rune_value)
-			}
-		default:
-			text2 += string(rune_value)
-		}
-	}
-
 	// Paragraphs
 	// Are we inside a header?
 	// Paragraphs separated by two! lines
-	text3 := ""
-	scanner := bufio.NewScanner(strings.NewReader(text2))
+	text2 := ""
+	scanner := bufio.NewScanner(strings.NewReader(text))
 	for scanner.Scan() {
 		line := scanner.Text()
 		switch {
-		case strings.Contains(line, "<h") && strings.Contains(line, "</h"):
+		case strings.HasPrefix(line, "#"):
 			fallthrough
 		case strings.HasPrefix(line, "- ") || strings.HasPrefix(strings.TrimSpace(line), "- "):
 			fallthrough
@@ -65,16 +38,48 @@ func main() {
 		case strings.HasPrefix(line, ">"):
 			fallthrough
 		case line == "":
-			text3 += line + "\n"
+			text2 += line + "\n"
 		default:
-			text3 += "<p>" + line + "</p>" + "\n"
+			text2 += "<p>" + line + "</p>" + "\n"
 		}
-
 	}
 	if err := scanner.Err(); err != nil {
 		log.Fatalf("Error in marknuno: %v\n", err)
 	}
-	// fmt.Printf(text3)
+	// fmt.Printf(text2)
+
+	// Headers
+	header_n := 0
+	header_possible := true
+	inside_header := false
+	text3 := ""
+	for _, rune_value := range text2 {
+		switch rune_value {
+		case '#':
+			if header_possible {
+				header_n += 1
+			}
+		case '\n':
+			if inside_header {
+				text3 += fmt.Sprintf("</h%d>", header_n)
+				inside_header = false
+				header_n = 0
+			}
+			text3 += "\n"
+			header_possible = true
+		case ' ':
+			if header_n > 0 && !inside_header {
+				text3 += fmt.Sprintf("<h%d>", header_n)
+				inside_header = true
+			} else {
+				text3 += string(rune_value)
+				header_possible = false
+			}
+		default:
+			text3 += string(rune_value)
+			header_possible = false
+		}
+	}
 
 	// Links, [link](https://example.com)
 	// but not ![](imgs)

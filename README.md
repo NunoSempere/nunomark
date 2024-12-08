@@ -25,6 +25,7 @@ Functionality that might supported
 
 - [ ] Checklists
 - [ ] Footnotes
+- [ ] Smart quotes?
 - [ ] Custom extensions
   - [ ] Mathjax
   - [ ] Blog comments
