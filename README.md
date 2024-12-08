@@ -6,16 +6,35 @@ Architecture: a series of passes, character by character.
 
 ## Passes
 
+Supported functionality:
+
 - [x] Headers
-- [~] Paragraphs
+  - [x] ## headers
+- [x] Paragraphs
 - [x] Links
-- [ ] Images
-- [ ] Footnotes
-- [ ] Bold 
-- [ ] Underline
-- [ ] ---
-- [ ] etc.
+- [x] Images
+- [x] Bold, italics, underline
+  - [x] Simple: *italics*, **bold**, ***bold italics***
 - [ ] Checklists
+- [ ] Bullet lists
+- [ ] Quotes
+- [ ] Footnotes
+- [ ] --- separators
+- [ ] etc.
+
+Unsupported functionality:
+
+- [ ] --- headers
+- [ ] Bold inside italics, or viceversa
+- [ ] Tables?
+- [ ] Embedded html
+- [ ] Ordered lists
+
+## Roadmap 
+
+- [ ] Read from file
+- [ ] Check against the commonmark spec? <https://github.com/commonmark/commonmark-spec>
+- [ ] Make this enough to support my forecasting newsletter
 
 ---
 

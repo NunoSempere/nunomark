@@ -175,6 +175,73 @@ func main() {
 			}
 		}
 	}
-	fmt.Println(text5)
+
+	// Bold, italics
+	text6 := ""
+	is_bold := false
+	is_italics := false
+	highlight_counter := 0
+	text_flag := false
+	ending_bold_flag := false // give error on **abc *xyz* mn
+	text_in_betwen := ""
+
+	for _, rune_value := range text5 {
+		switch rune_value {
+		case '*':
+			if !text_flag {
+				highlight_counter++
+				switch {
+				case !is_bold && !is_italics:
+					is_italics = true
+				case !is_bold && is_italics:
+					is_italics = false
+					is_bold = true
+				case is_bold && !is_italics:
+					is_italics = true
+				default:
+					log.Fatalln("Too many asterisks, reduce complexity!")
+				}
+			} else {
+				highlight_counter--
+				switch {
+				case is_italics && !is_bold:
+					text6 += fmt.Sprintf("<i>%s</i>", text_in_betwen)
+					is_italics = false
+					text_flag = false
+					text_in_betwen = ""
+				case is_italics && is_bold:
+					text_in_betwen = fmt.Sprintf("<i>%s</i>", text_in_betwen)
+					is_italics = false
+					ending_bold_flag = true // must be followed by another *
+				case !is_italics && is_bold && highlight_counter == 1:
+					ending_bold_flag = true // must be followed by another *
+				case !is_italics && is_bold && highlight_counter == 0:
+					text6 += fmt.Sprintf("<b>%s</b>", text_in_betwen)
+					is_bold = false
+					text_flag = false
+					ending_bold_flag = false
+					text_in_betwen = ""
+				}
+			}
+		default:
+			switch {
+			case ending_bold_flag:
+				log.Fatalf("Error: too many bolds inside italics inside..., simplify!")
+			case !is_italics && !is_bold:
+				text6 += string(rune_value)
+			case is_italics && !is_bold:
+				text_in_betwen += string(rune_value)
+				text_flag = true
+			case !is_italics && is_bold:
+				text_in_betwen += string(rune_value)
+				text_flag = true
+			case is_italics && is_bold:
+				text_in_betwen += string(rune_value)
+				text_flag = true
+			}
+		}
+	}
+	fmt.Printf("Highlights counter: %d", highlight_counter)
+	fmt.Println(text6)
 
 }
