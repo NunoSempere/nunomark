@@ -57,19 +57,13 @@ func main() {
 		// fmt.Printf("line: %s", line)
 		switch {
 		case strings.Contains(line, "<h") && strings.Contains(line, "</h"):
-			{
-				text3 += line + "\n"
-			}
-		case strings.HasPrefix(line, "- ") || strings.HasPrefix(line, "![](") || strings.HasPrefix(line, "---"):
-			{
-				text3 += line + "\n"
-			}
+			text3 += line + "\n"
+		case strings.HasPrefix(line, "- ") || strings.HasPrefix(strings.TrimSpace(line), "- "):
+			text3 += line + "\n"
+		case strings.HasPrefix(line, "![](") || strings.HasPrefix(line, "---"):
+			text3 += line + "\n"
 		case line == "":
-			{
-				// fmt.Println("line is empty")
-				// skip
-				text3 += "\n"
-			}
+			text3 += "\n"
 		default:
 			text3 += "<p>" + line + "</p>" + "\n"
 		}
@@ -241,7 +235,69 @@ func main() {
 			}
 		}
 	}
-	fmt.Printf("Highlights counter: %d", highlight_counter)
-	fmt.Println(text6)
+	// fmt.Printf("Highlights counter: %d", highlight_counter)
+	// fmt.Println(text6)
+
+	// Lists
+	text7 := ""
+	is_list := false
+
+	scanner7 := bufio.NewScanner(strings.NewReader(text6))
+	for scanner7.Scan() {
+		line := scanner7.Text()
+		switch {
+		case !is_list && !strings.HasPrefix(line, "- "):
+			text7 += line + "\n"
+		case !is_list && strings.HasPrefix(line, "- "):
+			is_list = true
+			list_item := strings.TrimPrefix(line, "- ")
+			text7 += "<ul>\n"
+			text7 += fmt.Sprintf("    <li>%s</li>\n", list_item)
+		case is_list && strings.HasPrefix(line, "- "):
+			list_item := strings.TrimPrefix(line, "- ")
+			// text7 += "<ul>\n"
+			text7 += fmt.Sprintf("    <li>%s</li>\n", list_item)
+		case is_list && strings.HasPrefix(strings.TrimSpace(line), "- "):
+			text7 += line + "\n"
+		case is_list && !strings.HasPrefix(strings.TrimSpace(line), "- "):
+			text7 += "</ul>\n\n"
+			text7 += line + "\n"
+			is_list = false
+		}
+
+	}
+	// fmt.Println(text7)
+
+	// Indented lists
+	text8 := ""
+	is_indented_list := false
+
+	scanner8 := bufio.NewScanner(strings.NewReader(text7))
+	for scanner8.Scan() {
+		line := scanner8.Text()
+		switch {
+		case !is_indented_list && !strings.HasPrefix(line, "  - "):
+			text8 += line + "\n"
+		case !is_indented_list && strings.HasPrefix(line, "  - "):
+			is_indented_list = true
+			list_item := strings.TrimPrefix(line, "  - ")
+			text8 += "    <ul>\n"
+			text8 += fmt.Sprintf("        <li>%s</li>\n", list_item)
+		case is_indented_list && strings.HasPrefix(line, "  - "):
+			list_item := strings.TrimPrefix(line, "  - ")
+			// text8 += "<ul>\n"
+			text8 += fmt.Sprintf("        <li>%s</li>\n", list_item)
+		case is_indented_list && !strings.HasPrefix(line, "  - "):
+			text8 += "    </ul>\n\n"
+			text8 += line + "\n"
+			is_indented_list = false
+		}
+
+	}
+	fmt.Println(text8)
+
+	// Lists and checklists.
+	// Hello
+	// ~, ✓,
 
 }

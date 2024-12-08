@@ -17,6 +17,8 @@ Supported functionality:
   - [x] Simple: *italics*, **bold**, ***bold italics***
 - [ ] Checklists
 - [ ] Bullet lists
+  - [ ] Simple lists
+  - [ ] Multilevel lists?
 - [ ] Quotes
 - [ ] Footnotes
 - [ ] --- separators
