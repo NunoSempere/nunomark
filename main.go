@@ -290,7 +290,7 @@ func main() {
 	// Quotes
 	text9 := ""
 	is_quote := false
-	scanner9 := bufio.NewScanner(strings.NewReader(text6))
+	scanner9 := bufio.NewScanner(strings.NewReader(text8))
 	for scanner9.Scan() {
 		line := scanner9.Text()
 		switch {
@@ -311,19 +311,40 @@ func main() {
 	}
 
 	// Second level quotes
-
-	// Line separator elements
 	text10 := ""
+	is_indented_quote := false
 	scanner10 := bufio.NewScanner(strings.NewReader(text9))
 	for scanner10.Scan() {
 		line := scanner10.Text()
-		switch line {
-		case "---":
-			text10 += "\n<hr>\n"
-		default:
+		switch {
+		case !is_indented_quote && !strings.HasPrefix(line, "    >"):
 			text10 += line + "\n"
+		case !is_indented_quote && strings.HasPrefix(line, "    >"):
+			is_indented_quote = true
+			text10 += "    <blockquote>\n"
+			fallthrough
+		case is_indented_quote && strings.HasPrefix(line, "    > "):
+			list_item := strings.TrimPrefix(line, "    > ")
+			text10 += fmt.Sprintf("        %s\n", list_item)
+		case is_indented_quote && !strings.HasPrefix(strings.TrimSpace(line), "    > "):
+			text10 += "    </blockquote>\n"
+			text10 += line + "\n"
+			is_indented_quote = false
 		}
 	}
-	fmt.Println(text10)
+
+	// Line separator elements
+	text11 := ""
+	scanner11 := bufio.NewScanner(strings.NewReader(text10))
+	for scanner11.Scan() {
+		line := scanner11.Text()
+		switch line {
+		case "---":
+			text11 += "\n<hr>\n"
+		default:
+			text11 += line + "\n"
+		}
+	}
+	fmt.Println(text11)
 
 }
