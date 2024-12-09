@@ -21,10 +21,15 @@ Supported functionality:
 - [x] Read from file
 - [x] Make this enough to support my forecasting newsletter
 - [x] Code blocks
+- [x] Footnotes
+  - [x] Simple foonotes
+  - [x] Footnotes and codeblocks at the same time
 
 Functionality that might supported in the future
 
-- [ ] Footnotes
+- [ ] Better footnotes
+  - [ ] Markdown and footnotes inside footnotes?
+  - [ ] Error checking for footnotes
 - [ ] Inline code
 - [ ] Underlines
 - [ ] Crossed out
@@ -70,7 +75,11 @@ You can see how nunomark renders this README [here](./README.html). For this, it
 *Italics*, and **bold**, and ***bold italics***.
 
 ```
-A code block!
+A code block! In a codeblock, I can have elements, 
+like footnotes [^footnotes] 
+or [links](https://hello-world.net), but they won't render.
+
+[^foonotes]: This is the syntax for foonotes
 ```
 
 Two [links](https://example.com), in one [line](https://test.com)

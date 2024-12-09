@@ -361,13 +361,18 @@ func parseIntoSeparators(text string) string {
 	return result
 }
 
-func parseIntoFootnotes(text string) string {
+type GlobalState struct {
+	footnote_names   []string
+	foonote_contents map[string]string
+}
+
+func parseIntoFootnotes(text string, state GlobalState) (string, GlobalState) {
 	// [^footnote]
 	// [^footnote]: Clarification
 	// Will need some data structure, but tired today
 	result := ""
-	footnote_names := []string{}
-	footnote_contents := map[string]string{}
+	footnote_names := state.footnote_names
+	footnote_contents := state.foonote_contents
 	footnote_state := 0
 	current_foonote_name := ""
 	current_footnote_contents := ""
@@ -419,9 +424,13 @@ func parseIntoFootnotes(text string) string {
 
 	// fmt.Println(footnote_contents)
 
+	return result, state
+}
+
+func parseGlobalStateIntoFootnotes(text string, state GlobalState) string {
 	i := 1
-	result += "\n<hr>\n"
-	for _, v := range footnote_contents {
+	result := text + "\n<hr>\n"
+	for _, v := range state.foonote_contents {
 		// fmt.Printf("key: %s, value: %s", k, v)
 		result += fmt.Sprintf("<p id='footnote-content-%d'>%d. %s <a href='#footnote-pointer-%d' role='doc-backlink'>↩︎</a></p>\n", i, i, v, i)
 		// Can I have footnotes inside footnotes?
@@ -429,11 +438,11 @@ func parseIntoFootnotes(text string) string {
 		// Would require running the pipeline recursively, lol
 		i++
 	}
-
 	return result
+
 }
 
-func parseIntoCodeBlocks(pipe func(string) string, text string) string {
+func parseIntoCodeBlocks(pipe func(s string, g GlobalState) (string, GlobalState), text string, state GlobalState) (string, GlobalState) {
 	result := ""
 	chunk := ""
 	code_block := false
@@ -444,7 +453,9 @@ func parseIntoCodeBlocks(pipe func(string) string, text string) string {
 		case !(line == "```") && !code_block:
 			chunk += line + "\n"
 		case line == "```" && !code_block:
-			result += pipe(chunk)
+			chunk_result, chunk_state := pipe(chunk, state)
+			state = chunk_state
+			result += chunk_result
 			chunk = ""
 			result += "<pre><code>\n"
 			code_block = true
@@ -458,8 +469,10 @@ func parseIntoCodeBlocks(pipe func(string) string, text string) string {
 	if code_block {
 		log.Fatalf("Unclosed codeblock!\n")
 	}
-	result += pipe(chunk)
-	return result
+	chunk_result, chunk_state := pipe(chunk, state)
+	state = chunk_state
+	result += chunk_result
+	return result, state
 }
 
 func main() {
@@ -474,7 +487,7 @@ func main() {
 	}
 	text := string(content)
 
-	var stringPipe = func(s string) string {
+	var stringPipe = func(s string, g GlobalState) (string, GlobalState) {
 		s = parseIntoParagraphs(s)
 		s = parseIntoHeaders(s)
 		s = parseIntoLinks(s)
@@ -483,12 +496,16 @@ func main() {
 		s = parseIntoLists(s)
 		s = parseIntoQuotes(s)
 		s = parseIntoSeparators(s)
-		s = parseIntoFootnotes(s)
-		return s
+		s, g = parseIntoFootnotes(s, g)
+		return s, g
 	}
 
-	result := stringPipe(text)
-	// result := parseIntoCodeBlocks(stringPipe, text)
+	state := GlobalState{footnote_names: []string{}, foonote_contents: map[string]string{}}
+	// result, state := stringPipe(text, state)
+	result, state := parseIntoCodeBlocks(stringPipe, text, state)
+
+	result = parseGlobalStateIntoFootnotes(result, state)
+
 	fmt.Println(result)
 
 }

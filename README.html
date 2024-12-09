@@ -31,13 +31,19 @@
     <li>[x] Read from file</li>
     <li>[x] Make this enough to support my forecasting newsletter</li>
     <li>[x] Code blocks</li>
+    <li>[ ] Footnotes</li>
+    <ul>
+        <li>[ ] Simple foonotes</li>
+        <li>[ ] Footnotes and codeblocks at the same time</li>
+        <li>[ ] Markdown and footnotes inside footnotes?</li>
+    </ul>
+
 </ul>
 
 
 <p>Functionality that might supported in the future</p>
 
 <ul>
-    <li>[ ] Footnotes</li>
     <li>[ ] Inline code</li>
     <li>[ ] Underlines</li>
     <li>[ ] Crossed out</li>
@@ -97,9 +103,13 @@
 
 <p><i>Italics</i>, and <b>bold</b>, and <b><i>bold italics</i></b>.</p>
 
-<p>```</p>
-<p>A code block!</p>
-<p>```</p>
+<pre><code>
+A code block! In a codeblock, I can have elements, 
+like footnotes [^footnotes] 
+or [links](https://hello-world.net), but they won't render.
+
+[^foonotes]: This is the syntax for foonotes
+</pre></code>
 
 <p>Two <a href='https://example.com'>links</a>, in one <a href='https://test.com'>line</a></p>
 
