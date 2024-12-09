@@ -1,6 +1,6 @@
 # nunomark
 
-A simple markdown to html compiler. Its architecture is a series of passes, character by character, or line by line. I wrote it because I thought it might be fun (it was).
+A simple markdown to html compiler. Its architecture is mostly a series of passes, character by character, or line by line. I wrote it because I thought it might be fun (it was!).
 
 ## Roadmap
 
