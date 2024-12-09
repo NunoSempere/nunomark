@@ -64,7 +64,7 @@ You can see how nunomark renders this README [here](./README.html). For this, it
 
 — [Sam Altman's blog](https://blog.samaltman.com/technology-predictions)[^lol], 2015, found when looking for sources for the first quote.
 
-[^lol]: lol
+[^lol]: ***lol***
 
 ---
 

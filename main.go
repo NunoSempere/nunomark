@@ -362,8 +362,9 @@ func parseIntoSeparators(text string) string {
 }
 
 type GlobalState struct {
-	footnote_names   []string
-	foonote_contents map[string]string
+	footnote_names                     []string
+	foonote_contents                   map[string]string
+	footnote_paragraphs_recursive_mark bool
 }
 
 func parseIntoFootnotes(text string, state GlobalState) (string, GlobalState) {
@@ -427,7 +428,30 @@ func parseIntoFootnotes(text string, state GlobalState) (string, GlobalState) {
 	return result, state
 }
 
-func parseGlobalStateIntoFootnotes(text string, state GlobalState) string {
+func stringPipe(s string, g GlobalState) (string, GlobalState) {
+	if !g.footnote_paragraphs_recursive_mark {
+		s = parseIntoParagraphs(s)
+	}
+	s = parseIntoHeaders(s)
+	s = parseIntoLinks(s)
+	s = parseIntoImages(s)
+	s = parseIntoHighlights(s)
+	s = parseIntoLists(s)
+	s = parseIntoQuotes(s)
+	s = parseIntoSeparators(s)
+	s, g = parseIntoFootnotes(s, g)
+	return s, g
+}
+
+func parseGlobalStateIntoFootnotes(text string, state GlobalState, pipe func(s string, g GlobalState) (string, GlobalState)) string {
+	var state2 GlobalState = state
+	state2.footnote_paragraphs_recursive_mark = true
+	for k, v := range state.foonote_contents {
+		tmp_txt, tmp_state := pipe(v, state2)
+		state2 = tmp_state
+		state2.foonote_contents[k] = tmp_txt
+	}
+
 	i := 1
 	result := text + "\n<hr>\n"
 	for _, v := range state.foonote_contents {
@@ -487,24 +511,11 @@ func main() {
 	}
 	text := string(content)
 
-	var stringPipe = func(s string, g GlobalState) (string, GlobalState) {
-		s = parseIntoParagraphs(s)
-		s = parseIntoHeaders(s)
-		s = parseIntoLinks(s)
-		s = parseIntoImages(s)
-		s = parseIntoHighlights(s)
-		s = parseIntoLists(s)
-		s = parseIntoQuotes(s)
-		s = parseIntoSeparators(s)
-		s, g = parseIntoFootnotes(s, g)
-		return s, g
-	}
-
-	state := GlobalState{footnote_names: []string{}, foonote_contents: map[string]string{}}
+	state := GlobalState{footnote_names: []string{}, foonote_contents: map[string]string{}, footnote_paragraphs_recursive_mark: false}
 	// result, state := stringPipe(text, state)
 	result, state := parseIntoCodeBlocks(stringPipe, text, state)
 
-	result = parseGlobalStateIntoFootnotes(result, state)
+	result = parseGlobalStateIntoFootnotes(result, state, stringPipe)
 
 	fmt.Println(result)
 
