@@ -454,7 +454,7 @@ func parseGlobalStateIntoFootnotes(text string, state GlobalState, pipe func(s s
 
 	i := 1
 	result := text + "\n<hr>\n"
-	for _, v := range state.foonote_contents {
+	for _, v := range state2.foonote_contents {
 		// fmt.Printf("key: %s, value: %s", k, v)
 		result += fmt.Sprintf("<p id='footnote-content-%d'>%d. %s <a href='#footnote-pointer-%d' role='doc-backlink'>↩︎</a></p>\n", i, i, v, i)
 		// Can I have footnotes inside footnotes?
