@@ -37,34 +37,34 @@ func parseIntoParagraphs(text string) string {
 }
 
 func parseIntoHeaders(text string) string {
-	header_n := 0
+	n := 0
 	header_possible := true
 	inside_header := false
 	result := ""
-	for _, rune_value := range text {
-		switch rune_value {
+	for _, c := range text {
+		switch c {
 		case '#':
 			if header_possible {
-				header_n += 1
+				n += 1
 			}
 		case '\n':
 			if inside_header {
-				result += fmt.Sprintf("</h%d>", header_n)
+				result += fmt.Sprintf("</h%d>", n)
 				inside_header = false
-				header_n = 0
+				n = 0
 			}
 			result += "\n"
 			header_possible = true
 		case ' ':
-			if header_n > 0 && !inside_header {
-				result += fmt.Sprintf("<h%d>", header_n)
+			if n > 0 && !inside_header {
+				result += fmt.Sprintf("<h%d>", n)
 				inside_header = true
 			} else {
-				result += string(rune_value)
+				result += string(c)
 				header_possible = false
 			}
 		default:
-			result += string(rune_value)
+			result += string(c)
 			header_possible = false
 		}
 	}
@@ -79,17 +79,17 @@ func parseIntoLinks(text string) string {
 	link_text := ""
 	link_url := ""
 	link_state := 0 //
-	for _, rune_value := range text {
+	for _, c := range text {
 		switch {
-		case rune_value == '!':
+		case c == '!':
 			link_state = -1
-		case rune_value == '[' && (link_state == 0):
+		case c == '[' && (link_state == 0):
 			link_state = 1
-		case rune_value == ']' && (link_state == 1):
+		case c == ']' && (link_state == 1):
 			link_state = 2
-		case rune_value == '(' && (link_state == 2):
+		case c == '(' && (link_state == 2):
 			link_state = 3
-		case rune_value == ')' && (link_state == 3):
+		case c == ')' && (link_state == 3):
 			result += fmt.Sprintf("<a href='%s'>%s</a>", link_url, link_text)
 			link_state = 0
 			link_text = ""
@@ -101,17 +101,17 @@ func parseIntoLinks(text string) string {
 				result += "!"
 				fallthrough
 			case 0:
-				result += string(rune_value)
+				result += string(c)
 			case 1:
-				link_text += string(rune_value)
+				link_text += string(c)
 			case 2:
 				result += fmt.Sprintf("[%s]", link_text)
-				result += string(rune_value)
+				result += string(c)
 				link_state = 0
 				link_text = ""
 				link_url = ""
 			case 3:
-				link_url += string(rune_value)
+				link_url += string(c)
 			}
 		}
 	}
@@ -129,17 +129,17 @@ func parseIntoImages(text string) string {
 	img_text := ""
 	img_url := ""
 	img_state := 0 //
-	for _, rune_value := range text {
+	for _, c := range text {
 		switch {
-		case rune_value == '!':
+		case c == '!':
 			img_state = 1
-		case rune_value == '[' && (img_state == 1):
+		case c == '[' && (img_state == 1):
 			img_state = 2
-		case rune_value == ']' && (img_state == 2):
+		case c == ']' && (img_state == 2):
 			img_state = 3
-		case rune_value == '(' && (img_state == 3):
+		case c == '(' && (img_state == 3):
 			img_state = 4
-		case rune_value == ')' && (img_state == 4):
+		case c == ')' && (img_state == 4):
 			result += fmt.Sprintf("<img src='%s'>", img_url)
 			if img_text != "" {
 				result += fmt.Sprintf("<figcaption>%s</figcaption>", img_text)
@@ -150,21 +150,21 @@ func parseIntoImages(text string) string {
 		default:
 			switch img_state {
 			case 0:
-				result += string(rune_value)
+				result += string(c)
 			case 1:
 				img_state = 0
 				result += "!"
-				result += string(rune_value)
+				result += string(c)
 			case 2:
-				img_text += string(rune_value)
+				img_text += string(c)
 			case 3:
 				result += fmt.Sprintf("![%s]", img_text)
-				result += string(rune_value)
+				result += string(c)
 				img_state = 0
 				img_text = ""
 				img_url = ""
 			case 4:
-				img_url += string(rune_value)
+				img_url += string(c)
 			}
 		}
 	}
@@ -180,8 +180,8 @@ func parseIntoHighlights(text string) string {
 	ending_bold_flag := false
 	text_in_betwen := ""
 
-	for _, rune_value := range text {
-		switch rune_value {
+	for _, c := range text {
+		switch c {
 		case '*':
 			if !text_flag {
 				highlight_counter++
@@ -227,15 +227,15 @@ func parseIntoHighlights(text string) string {
 				fmt.Printf("Text part: %s\n\n", text_in_betwen)
 				log.Fatalf("Result up to now: %s\n", result)
 			case !is_italics && !is_bold:
-				result += string(rune_value)
+				result += string(c)
 			case is_italics && !is_bold:
-				text_in_betwen += string(rune_value)
+				text_in_betwen += string(c)
 				text_flag = true
 			case !is_italics && is_bold:
-				text_in_betwen += string(rune_value)
+				text_in_betwen += string(c)
 				text_flag = true
 			case is_italics && is_bold:
-				text_in_betwen += string(rune_value)
+				text_in_betwen += string(c)
 				text_flag = true
 			}
 		}
@@ -259,8 +259,8 @@ func parseIntoLists(text string) string {
 			result_1 += "<ul>\n"
 			fallthrough
 		case is_list && strings.HasPrefix(line, "- "):
-			list_item := strings.TrimPrefix(line, "- ")
-			result_1 += fmt.Sprintf("    <li>%s</li>\n", list_item)
+			li := strings.TrimPrefix(line, "- ")
+			result_1 += fmt.Sprintf("    <li>%s</li>\n", li)
 		case is_list && strings.HasPrefix(strings.TrimSpace(line), "- "):
 			result_1 += line + "\n"
 		case is_list && !strings.HasPrefix(strings.TrimSpace(line), "- "):
@@ -285,8 +285,8 @@ func parseIntoLists(text string) string {
 			result_2 += "    <ul>\n"
 			fallthrough
 		case is_indented_list && strings.HasPrefix(line, "  - "):
-			list_item := strings.TrimPrefix(line, "  - ")
-			result_2 += fmt.Sprintf("        <li>%s</li>\n", list_item)
+			li := strings.TrimPrefix(line, "  - ")
+			result_2 += fmt.Sprintf("        <li>%s</li>\n", li)
 		case is_indented_list && !strings.HasPrefix(line, "  - "):
 			result_2 += "    </ul>\n\n"
 			result_2 += line + "\n"
@@ -312,8 +312,8 @@ func parseIntoQuotes(text string) string {
 			result_1 += "<blockquote>\n"
 			fallthrough
 		case is_quote && strings.HasPrefix(line, "> "):
-			list_item := strings.TrimPrefix(line, "> ")
-			result_1 += fmt.Sprintf("    %s\n", list_item)
+			li := strings.TrimPrefix(line, "> ")
+			result_1 += fmt.Sprintf("    %s\n", li)
 		case is_quote && !strings.HasPrefix(strings.TrimSpace(line), "> "):
 			result_1 += "</blockquote>\n"
 			result_1 += line + "\n"
@@ -335,8 +335,8 @@ func parseIntoQuotes(text string) string {
 			result_2 += "    <blockquote>\n"
 			fallthrough
 		case is_indented_quote && strings.HasPrefix(line, "    > "):
-			list_item := strings.TrimPrefix(line, "    > ")
-			result_2 += fmt.Sprintf("        %s\n", list_item)
+			li := strings.TrimPrefix(line, "    > ")
+			result_2 += fmt.Sprintf("        %s\n", li)
 		case is_indented_quote && !strings.HasPrefix(strings.TrimSpace(line), "    > "):
 			result_2 += "    </blockquote>\n"
 			result_2 += line + "\n"
@@ -381,27 +381,27 @@ func parseIntoFootnotes(text string, state GlobalState) (string, GlobalState) {
 	footnote_state := 0
 	current_foonote_name := ""
 	current_footnote_contents := ""
-	for _, rune_value := range text {
+	for _, c := range text {
 		switch {
-		case rune_value == '[':
+		case c == '[':
 			footnote_state = 1
-		case rune_value == '^' && footnote_state == 1:
+		case c == '^' && footnote_state == 1:
 			footnote_state = 2
-		case rune_value == ']' && footnote_state == 2:
+		case c == ']' && footnote_state == 2:
 			footnote_state = 3
-		case rune_value == ':' && footnote_state == 3:
+		case c == ':' && footnote_state == 3:
 			footnote_state = 4
-		case rune_value == '\n' && footnote_state == 4:
+		case c == '\n' && footnote_state == 4:
 			footnote_state = 5
 		default:
 			switch footnote_state {
 			case 0:
-				result += string(rune_value)
+				result += string(c)
 			case 1:
-				result += "[" + string(rune_value)
+				result += "[" + string(c)
 				footnote_state = 0
 			case 2:
-				current_foonote_name += string(rune_value)
+				current_foonote_name += string(c)
 			case 3:
 				state.footnotes[current_foonote_name] = Footnote{name: current_foonote_name, content: "", count: (state.footnote_count + 1)}
 				state.footnote_count++
@@ -409,7 +409,7 @@ func parseIntoFootnotes(text string, state GlobalState) (string, GlobalState) {
 				result += fmt.Sprintf("<a href='#footnote-content-%d' id='footnote-pointer-%d' role='doc-backlink'><sup>%d</sup></a>", state.footnote_count, state.footnote_count, state.footnote_count)
 				current_foonote_name = ""
 			case 4:
-				current_footnote_contents += string(rune_value)
+				current_footnote_contents += string(c)
 			case 5:
 				f, ok := state.footnotes[current_foonote_name]
 				if ok {
