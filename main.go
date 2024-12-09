@@ -415,7 +415,7 @@ func parseIntoFootnotes(text string, state GlobalState) (string, GlobalState) {
 				if ok {
 					state.footnotes[current_foonote_name] = Footnote{name: f.name, content: current_footnote_contents, count: f.count}
 				} else {
-					log.Fatalf("In footnote %s, footnote contents don't correspond to an in-text footnote\n", current_foonote_name)
+					log.Fatalf("In footnote %s, footnote contents don't correspond to an in-text footnote. Maybe this is caused by a code-block between the footnote and its context?\n", current_foonote_name)
 				}
 				footnote_state = 0
 				current_foonote_name = ""

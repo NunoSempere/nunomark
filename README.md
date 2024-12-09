@@ -36,13 +36,13 @@ Functionality that might supported in the future
 - [ ] Extensions
   - [ ] Mathjax
   - [ ] Blog comments
-  - [ ] Checklists, with [~]. ❌〜✔️
+    - [ ] Checklists, with [~]. [✗], [**〜**], [**~**] [✔️]
   - [ ] Smart quotes?
-- [ ] Check against the commonmark spec? <https://github.com/commonmark/commonmark-spec>
+- [ ] Check against the commonmark spec? <https://github.com/commonmark/commonmark-spec>, or against the initial implementation? <https://daringfireball.net/projects/markdown/> <https://daringfireball.net/projects/markdown/syntax>
 
 Unsupported functionality:
 
-- [ ] --- headers
+- [ ] --- or === -style headers
 - [ ] Weird cases of many bolds inside italics, or viceversa
 - [ ] Tables?
 - [ ] Ordered lists
