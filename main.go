@@ -361,23 +361,26 @@ func parseIntoSeparators(text string) string {
 	return result
 }
 
+type Footnote struct {
+	count   int
+	name    string
+	content string
+}
+
 type GlobalState struct {
-	footnote_names                     []string
-	foonote_contents                   map[string]string
+	footnotes                          map[string]Footnote
+	footnote_count                     int
 	footnote_paragraphs_recursive_mark bool
 }
 
 func parseIntoFootnotes(text string, state GlobalState) (string, GlobalState) {
 	// [^footnote]
 	// [^footnote]: Clarification
-	// Will need some data structure, but tired today
+	// Because footnotes can have footnotes, need to keep track of the numbering
 	result := ""
-	footnote_names := state.footnote_names
-	footnote_contents := state.foonote_contents
 	footnote_state := 0
 	current_foonote_name := ""
 	current_footnote_contents := ""
-	footnote_n := 1
 	for _, rune_value := range text {
 		switch {
 		case rune_value == '[':
@@ -400,15 +403,20 @@ func parseIntoFootnotes(text string, state GlobalState) (string, GlobalState) {
 			case 2:
 				current_foonote_name += string(rune_value)
 			case 3:
-				footnote_names = append(footnote_names, current_foonote_name)
+				state.footnotes[current_foonote_name] = Footnote{name: current_foonote_name, content: "", count: (state.footnote_count + 1)}
+				state.footnote_count++
 				footnote_state = 0
-				result += fmt.Sprintf("<a href='#footnote-content-%d' id='footnote-pointer-%d' role='doc-backlink'><sup>%d</sup></a>", footnote_n, footnote_n, footnote_n)
-				footnote_n++
-				// do nothing
+				result += fmt.Sprintf("<a href='#footnote-content-%d' id='footnote-pointer-%d' role='doc-backlink'><sup>%d</sup></a>", state.footnote_count, state.footnote_count, state.footnote_count)
+				current_foonote_name = ""
 			case 4:
 				current_footnote_contents += string(rune_value)
 			case 5:
-				footnote_contents[current_foonote_name] = current_footnote_contents
+				f, ok := state.footnotes[current_foonote_name]
+				if ok {
+					state.footnotes[current_foonote_name] = Footnote{name: f.name, content: current_footnote_contents, count: f.count}
+				} else {
+					log.Fatalf("In footnote %s, footnote contents don't correspond to an in-text footnote\n", current_foonote_name)
+				}
 				footnote_state = 0
 				current_foonote_name = ""
 				current_footnote_contents = ""
@@ -416,10 +424,16 @@ func parseIntoFootnotes(text string, state GlobalState) (string, GlobalState) {
 		}
 	}
 
-	// TODO: Check invariants:
+	// TODO: Check invariants, at the end.
 	// case not 2
 	// all footnotes have contents & viceversa
-
+	/*
+		for k, v := range state.footnotes {
+			if v.content == "" {
+				log.Fatalf("No footnote content corresponding to ")
+			}
+		}
+	*/
 	// return the map so that this interfaces well with code blocks.
 	// But for now just test.
 
@@ -446,21 +460,18 @@ func stringPipe(s string, g GlobalState) (string, GlobalState) {
 func parseGlobalStateIntoFootnotes(text string, state GlobalState, pipe func(s string, g GlobalState) (string, GlobalState)) string {
 	var state2 GlobalState = state
 	state2.footnote_paragraphs_recursive_mark = true
-	for k, v := range state.foonote_contents {
-		tmp_txt, tmp_state := pipe(v, state2)
+	for k, v := range state.footnotes {
+		tmp_txt, tmp_state := pipe(v.content, state2)
 		state2 = tmp_state
-		state2.foonote_contents[k] = tmp_txt
+		state2.footnotes[k] = Footnote{count: v.count, name: v.name, content: tmp_txt}
 	}
 
-	i := 1
 	result := text + "\n<hr>\n"
-	for _, v := range state2.foonote_contents {
-		// fmt.Printf("key: %s, value: %s", k, v)
-		result += fmt.Sprintf("<p id='footnote-content-%d'>%d. %s <a href='#footnote-pointer-%d' role='doc-backlink'>↩︎</a></p>\n", i, i, v, i)
-		// Can I have footnotes inside footnotes?
-		// Or even markdown inside footnotes?
-		// Would require running the pipeline recursively, lol
-		i++
+	for _, v := range state2.footnotes {
+		if v.content == "" {
+			log.Fatalf("Footnote %s has no content. Syntax is:\n  xyz[^abc]\n\n  [^abc]: pqr\n", v.name)
+		}
+		result += fmt.Sprintf("<p id='footnote-content-%d'>%d. %s <a href='#footnote-pointer-%d' role='doc-backlink'>↩︎</a></p>\n", v.count, v.count, v.content, v.count)
 	}
 	return result
 
@@ -511,7 +522,7 @@ func main() {
 	}
 	text := string(content)
 
-	state := GlobalState{footnote_names: []string{}, foonote_contents: map[string]string{}, footnote_paragraphs_recursive_mark: false}
+	state := GlobalState{footnote_count: 0, footnotes: map[string]Footnote{}, footnote_paragraphs_recursive_mark: false}
 	// result, state := stringPipe(text, state)
 	result, state := parseIntoCodeBlocks(stringPipe, text, state)
 

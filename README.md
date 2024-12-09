@@ -24,22 +24,21 @@ Supported functionality:
 - [x] Footnotes
   - [x] Simple foonotes
   - [x] Footnotes and codeblocks at the same time
+  - [x] Markdown and footnotes inside footnotes?
+  - [x] Error checking for footnotes
 
 Functionality that might supported in the future
 
-- [ ] Better footnotes
-  - [ ] Markdown and footnotes inside footnotes?
-  - [ ] Error checking for footnotes
+- [ ] Add unsafe mode, which tries to go on when encountering a mistake?
 - [ ] Inline code
 - [ ] Underlines
 - [ ] Crossed out
 - [ ] Extensions
   - [ ] Mathjax
   - [ ] Blog comments
-  - [ ] Checklists, with [~]
+  - [ ] Checklists, with [~]. ❌〜✔️
   - [ ] Smart quotes?
 - [ ] Check against the commonmark spec? <https://github.com/commonmark/commonmark-spec>
-- [ ] Add unsafe mode, which tries to go on when encountering a mistake?
 
 Unsupported functionality:
 
