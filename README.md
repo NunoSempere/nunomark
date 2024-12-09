@@ -57,7 +57,9 @@ You can see how nunomark renders this README [here](./README.html). For this, it
 > 
 > —*Many otherwise smart people, 2015* 
 
-— [Sam Altman's blog](https://blog.samaltman.com/technology-predictions), 2015, found when looking for sources for the first quote.
+— [Sam Altman's blog](https://blog.samaltman.com/technology-predictions)[^lol], 2015, found when looking for sources for the first quote.
+
+[^lol]: lol
 
 ---
 
@@ -87,3 +89,4 @@ A text! With some exclamation mark!
   - Other platforms
 - Research and articles
 - Odds and ends
+

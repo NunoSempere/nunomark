@@ -18,7 +18,9 @@ func parseIntoParagraphs(text string) string {
 			fallthrough
 		case strings.HasPrefix(line, "- ") || strings.HasPrefix(strings.TrimSpace(line), "- "):
 			fallthrough
-		case strings.HasPrefix(line, "![](") || strings.HasPrefix(line, "---"):
+		case strings.HasPrefix(line, "![](") || strings.HasPrefix(line, "[^"):
+			fallthrough
+		case strings.HasPrefix(line, "---"):
 			fallthrough
 		case strings.HasPrefix(line, ">"):
 			fallthrough
@@ -364,6 +366,70 @@ func parseIntoFootnotes(text string) string {
 	// [^footnote]: Clarification
 	// Will need some data structure, but tired today
 	result := ""
+	footnote_names := []string{}
+	footnote_contents := map[string]string{}
+	footnote_state := 0
+	current_foonote_name := ""
+	current_footnote_contents := ""
+	footnote_n := 1
+	for _, rune_value := range text {
+		switch {
+		case rune_value == '[':
+			footnote_state = 1
+		case rune_value == '^' && footnote_state == 1:
+			footnote_state = 2
+		case rune_value == ']' && footnote_state == 2:
+			footnote_state = 3
+		case rune_value == ':' && footnote_state == 3:
+			footnote_state = 4
+		case rune_value == '\n' && footnote_state == 4:
+			footnote_state = 5
+		default:
+			switch footnote_state {
+			case 0:
+				result += string(rune_value)
+			case 1:
+				result += "[" + string(rune_value)
+				footnote_state = 0
+			case 2:
+				current_foonote_name += string(rune_value)
+			case 3:
+				footnote_names = append(footnote_names, current_foonote_name)
+				footnote_state = 0
+				result += fmt.Sprintf("<a href='#footnote-content-%d' id='footnote-pointer-%d' role='doc-backlink'><sup>%d</sup></a>", footnote_n, footnote_n, footnote_n)
+				footnote_n++
+				// do nothing
+			case 4:
+				current_footnote_contents += string(rune_value)
+			case 5:
+				footnote_contents[current_foonote_name] = current_footnote_contents
+				footnote_state = 0
+				current_foonote_name = ""
+				current_footnote_contents = ""
+			}
+		}
+	}
+
+	// TODO: Check invariants:
+	// case not 2
+	// all footnotes have contents & viceversa
+
+	// return the map so that this interfaces well with code blocks.
+	// But for now just test.
+
+	// fmt.Println(footnote_contents)
+
+	i := 1
+	result += "\n<hr>\n"
+	for _, v := range footnote_contents {
+		// fmt.Printf("key: %s, value: %s", k, v)
+		result += fmt.Sprintf("<p id='footnote-content-%d'>%d. %s <a href='#footnote-pointer-%d' role='doc-backlink'>↩︎</a></p>\n", i, i, v, i)
+		// Can I have footnotes inside footnotes?
+		// Or even markdown inside footnotes?
+		// Would require running the pipeline recursively, lol
+		i++
+	}
+
 	return result
 }
 
@@ -417,10 +483,12 @@ func main() {
 		s = parseIntoLists(s)
 		s = parseIntoQuotes(s)
 		s = parseIntoSeparators(s)
+		s = parseIntoFootnotes(s)
 		return s
 	}
 
-	result := parseIntoCodeBlocks(stringPipe, text)
+	result := stringPipe(text)
+	// result := parseIntoCodeBlocks(stringPipe, text)
 	fmt.Println(result)
 
 }
