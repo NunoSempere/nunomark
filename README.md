@@ -30,6 +30,7 @@ Supported functionality:
 Functionality that might supported in the future
 
 - [ ] Add unsafe mode, which tries to go on when encountering a mistake?
+- [ ] Warnings when text doesn't end with newline?
 - [ ] Inline code
 - [ ] Underlines
 - [ ] Crossed out

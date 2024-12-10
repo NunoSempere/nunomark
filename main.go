@@ -383,7 +383,7 @@ func parseIntoFootnotes(text string, state GlobalState) (string, GlobalState) {
 	current_footnote_contents := ""
 	for _, c := range text {
 		switch {
-		case c == '[':
+		case c == '[' && footnote_state == 0:
 			footnote_state = 1
 		case c == '^' && footnote_state == 1:
 			footnote_state = 2
@@ -393,6 +393,8 @@ func parseIntoFootnotes(text string, state GlobalState) (string, GlobalState) {
 			footnote_state = 4
 		case c == '\n' && footnote_state == 4:
 			footnote_state = 5
+		case c == '[' && footnote_state == 3:
+			fallthrough
 		default:
 			switch footnote_state {
 			case 0:
@@ -408,6 +410,11 @@ func parseIntoFootnotes(text string, state GlobalState) (string, GlobalState) {
 				footnote_state = 0
 				result += fmt.Sprintf("<a href='#footnote-content-%d' id='footnote-pointer-%d' role='doc-backlink'><sup>%d</sup></a>", state.footnote_count, state.footnote_count, state.footnote_count)
 				current_foonote_name = ""
+				if c == '[' {
+					footnote_state = 1
+				} else {
+					result += string(c)
+				}
 			case 4:
 				current_footnote_contents += string(c)
 			case 5:
@@ -415,7 +422,7 @@ func parseIntoFootnotes(text string, state GlobalState) (string, GlobalState) {
 				if ok {
 					state.footnotes[current_foonote_name] = Footnote{name: f.name, content: current_footnote_contents, count: f.count}
 				} else {
-					log.Fatalf("In footnote %s, footnote contents don't correspond to an in-text footnote. Maybe this is caused by a code-block between the footnote and its context?\n", current_foonote_name)
+					log.Fatalf("In footnote %s (%v), footnote contents don't correspond to an in-text footnote. Maybe this is caused by a code-block between the footnote and its context?\n", current_foonote_name, state.footnotes)
 				}
 				footnote_state = 0
 				current_foonote_name = ""
@@ -469,7 +476,7 @@ func parseGlobalStateIntoFootnotes(text string, state GlobalState, pipe func(s s
 	result := text + "\n<hr>\n"
 	for _, v := range state2.footnotes {
 		if v.content == "" {
-			log.Fatalf("Footnote %s has no content. Syntax is:\n  xyz[^abc]\n\n  [^abc]: pqr\n", v.name)
+			log.Fatalf("Footnote %s has no content. Syntax is:\n  xyz[^abc]\n\n  [^abc]: pqr. Maybe the text didn't end with a newline?\nFootnotes go obj: %v\n", v.name, state2.footnotes)
 		}
 		result += fmt.Sprintf("<p id='footnote-content-%d'>%d. %s <a href='#footnote-pointer-%d' role='doc-backlink'>↩︎</a></p>\n", v.count, v.count, v.content, v.count)
 	}
