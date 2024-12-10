@@ -26,11 +26,12 @@ Supported functionality:
   - [x] Footnotes and codeblocks at the same time
   - [x] Markdown and footnotes inside footnotes?
   - [x] Error checking for footnotes
+- [x] Add unsafe mode, which tries to go on when encountering a mistake?
 
 Functionality that might supported in the future
 
-- [ ] Add unsafe mode, which tries to go on when encountering a mistake?
-- [ ] Warnings when text doesn't end with newline?
+- [ ] Warnings when text doesn't end with newline? <= produces all kinds of errors
+- [ ] Read from stdin
 - [ ] Inline code
 - [ ] Underlines
 - [ ] Crossed out

@@ -2,11 +2,32 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
 	"log"
 	"os"
 	"strings"
 )
+
+// Errors and ignoring those errors
+var WING_IT = false
+
+func Fatalf(s string, p ...interface{}) {
+	if !WING_IT {
+		fmt.Println("Fatal error in marknuno...")
+		fmt.Println("You might be able to avoid it with")
+		fmt.Println("$ nunomark --wing-it file.md")
+		fmt.Println("at your peril")
+		fmt.Printf(s, p...)
+		os.Exit(1)
+	}
+}
+
+func checkScannError(err error) {
+	if err != nil {
+		Fatalf("Scan error: %v\n", err)
+	}
+}
 
 func parseIntoParagraphs(text string) string {
 	result := ""
@@ -30,9 +51,7 @@ func parseIntoParagraphs(text string) string {
 			result += "<p>" + line + "</p>" + "\n"
 		}
 	}
-	if err := scanner.Err(); err != nil {
-		log.Fatalf("Error in marknuno: %v\n", err)
-	}
+	checkScannError(scanner.Err())
 	return result
 }
 
@@ -116,7 +135,7 @@ func parseIntoLinks(text string) string {
 		}
 	}
 	if link_state > 0 {
-		log.Fatalf("Error parsing link. Intermediary result: [%s](%s)\n", link_text, link_url)
+		Fatalf("Error parsing link. Intermediary result: [%s](%s)\n", link_text, link_url)
 	}
 	return result
 }
@@ -196,7 +215,7 @@ func parseIntoHighlights(text string) string {
 				default:
 					fmt.Printf("Too many asterisks, reduce complexity!\n")
 					fmt.Printf("Text part: %s\n\n", text_in_betwen)
-					log.Fatalf("Result up to now: %s\n", result)
+					Fatalf("Result up to now: %s\n", result)
 				}
 			} else {
 				highlight_counter--
@@ -225,7 +244,7 @@ func parseIntoHighlights(text string) string {
 			case ending_bold_flag:
 				fmt.Printf("Too many asterisks, reduce complexity!\n")
 				fmt.Printf("Text part: %s\n\n", text_in_betwen)
-				log.Fatalf("Result up to now: %s\n", result)
+				Fatalf("Result up to now: %s\n", result)
 			case !is_italics && !is_bold:
 				result += string(c)
 			case is_italics && !is_bold:
@@ -269,6 +288,7 @@ func parseIntoLists(text string) string {
 			is_list = false
 		}
 	}
+	checkScannError(scanner.Err())
 
 	// Indented lists
 	result_2 := ""
@@ -292,8 +312,9 @@ func parseIntoLists(text string) string {
 			result_2 += line + "\n"
 			is_indented_list = false
 		}
-
 	}
+	checkScannError(scanner.Err())
+
 	return result_2
 }
 
@@ -343,6 +364,8 @@ func parseIntoQuotes(text string) string {
 			is_indented_quote = false
 		}
 	}
+	checkScannError(scanner.Err())
+
 	return result_2
 }
 
@@ -358,6 +381,7 @@ func parseIntoSeparators(text string) string {
 			result += line + "\n"
 		}
 	}
+	checkScannError(scanner.Err())
 	return result
 }
 
@@ -422,7 +446,7 @@ func parseIntoFootnotes(text string, state GlobalState) (string, GlobalState) {
 				if ok {
 					state.footnotes[current_foonote_name] = Footnote{name: f.name, content: current_footnote_contents, count: f.count}
 				} else {
-					log.Fatalf("In footnote %s (%v), footnote contents don't correspond to an in-text footnote. Maybe this is caused by a code-block between the footnote and its context?\n", current_foonote_name, state.footnotes)
+					Fatalf("In footnote %s (%v), footnote contents don't correspond to an in-text footnote. Maybe this is caused by a code-block between the footnote and its context?\n", current_foonote_name, state.footnotes)
 				}
 				footnote_state = 0
 				current_foonote_name = ""
@@ -430,21 +454,6 @@ func parseIntoFootnotes(text string, state GlobalState) (string, GlobalState) {
 			}
 		}
 	}
-
-	// TODO: Check invariants, at the end.
-	// case not 2
-	// all footnotes have contents & viceversa
-	/*
-		for k, v := range state.footnotes {
-			if v.content == "" {
-				log.Fatalf("No footnote content corresponding to ")
-			}
-		}
-	*/
-	// return the map so that this interfaces well with code blocks.
-	// But for now just test.
-
-	// fmt.Println(footnote_contents)
 
 	return result, state
 }
@@ -476,7 +485,7 @@ func parseGlobalStateIntoFootnotes(text string, state GlobalState, pipe func(s s
 	result := text + "\n<hr>\n"
 	for _, v := range state2.footnotes {
 		if v.content == "" {
-			log.Fatalf("Footnote %s has no content. Syntax is:\n  xyz[^abc]\n\n  [^abc]: pqr. Maybe the text didn't end with a newline?\nFootnotes go obj: %v\n", v.name, state2.footnotes)
+			Fatalf("Footnote %s has no content. Syntax is:\n  xyz[^abc]\n\n  [^abc]: pqr. Maybe the text didn't end with a newline?\nFootnotes go obj: %v\n", v.name, state2.footnotes)
 		}
 		result += fmt.Sprintf("<p id='footnote-content-%d'>%d. %s <a href='#footnote-pointer-%d' role='doc-backlink'>↩︎</a></p>\n", v.count, v.count, v.content, v.count)
 	}
@@ -508,8 +517,10 @@ func parseIntoCodeBlocks(pipe func(s string, g GlobalState) (string, GlobalState
 			code_block = false
 		}
 	}
+	checkScannError(scanner.Err())
+
 	if code_block {
-		log.Fatalf("Unclosed codeblock!\n")
+		Fatalf("Unclosed codeblock!\n")
 	}
 	chunk_result, chunk_state := pipe(chunk, state)
 	state = chunk_state
@@ -518,21 +529,27 @@ func parseIntoCodeBlocks(pipe func(s string, g GlobalState) (string, GlobalState
 }
 
 func main() {
-	if len(os.Args) < 2 {
-		log.Fatalf("Usage: nunomark file.md")
+
+	wing_it_flag := flag.Bool("wing-it", false, "Continue upon encountering errors")
+	flag.Parse()
+	WING_IT = *wing_it_flag
+
+	args := flag.Args()
+	if len(args) < 1 {
+		fmt.Printf("Usage: nunomark file.md\n")
+		os.Exit(1)
 	}
-	file_name := os.Args[1]
+	file_name := args[0]
 
 	content, err := os.ReadFile(file_name)
 	if err != nil {
-		log.Fatalf("Failed to read file: %s", err)
+		fmt.Printf("Failed to read file: %s", err)
+		os.Exit(1)
 	}
 	text := string(content)
 
 	state := GlobalState{footnote_count: 0, footnotes: map[string]Footnote{}, footnote_paragraphs_recursive_mark: false}
-	// result, state := stringPipe(text, state)
 	result, state := parseIntoCodeBlocks(stringPipe, text, state)
-
 	result = parseGlobalStateIntoFootnotes(result, state, stringPipe)
 
 	fmt.Println(result)
